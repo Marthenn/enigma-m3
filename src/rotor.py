@@ -30,11 +30,11 @@ class Rotor():
         offset = ord(self.position) - ord("A")
         idx = ord(char) - ord("A")
 
-        print("idx: " + str(idx) + " offset: " + str(offset))
+        # print("idx: " + str(idx) + " offset: " + str(offset))
 
         mapped = self.wiring[(idx + offset) % 26]
 
-        print("mapped: " + mapped)
+        # print("mapped: " + mapped)
 
         res_idx = (ord(mapped) - ord("A") - offset)%26
         if res_idx < 0:
@@ -47,9 +47,6 @@ class Rotor():
         """
         The reverse cypher of the rotor (left to right in the machine)
         """
-        char = char.upper() # Make sure the character is uppercase
-
-        offset = ord(self.position) - ord("A") # The offset of the rotor
         pass
 
 class RotorI(Rotor):
