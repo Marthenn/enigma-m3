@@ -2,8 +2,8 @@
 The enigma machine class
 """
 
-from .rotor import RotorI, RotorII, RotorIII, Reflector
-from .plugboard import Plugboard
+from rotor import RotorI, RotorII, RotorIII, Reflector
+from plugboard import Plugboard
 
 class Enigma:
     """
@@ -31,6 +31,10 @@ class Enigma:
         """
         Perform encryption on a single character in the enigma machine
         """
+        # check if it's outside of alphabet
+        if not char.isalpha():
+            return char, char, char, char, char, char, char, char, char, char
+
         self.__rotate__()
         plugboard_input = self.plugboard.cypher(char)
         rl_3 = self.rotor[2].forward_cypher(plugboard_input)
