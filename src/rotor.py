@@ -9,7 +9,7 @@ class Rotor():
     The parent class of all rotors (including the reflector)
     """
     def __init__(self):
-        self.wiring = {}
+        self.wiring = []
         self.notch = ""
         self.position = "A"
 
@@ -99,4 +99,3 @@ class Reflector(Rotor):
         Rotor.__init__(self)
         self.wiring = list("YRUHQSLDPXNGOKMIEBFZCWVJAT")
         self.position = "A"
-
