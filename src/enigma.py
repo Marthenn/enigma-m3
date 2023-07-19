@@ -88,3 +88,75 @@ class Enigma:
         Set the position of the right rotor of the enigma machine
         """
         self.rotor[2].position = position
+
+def __test_turing__(text, dummy):
+    """
+    Helper function to test whether or not the current setup is correct
+    """
+    CORRECT_TEXT = "HELLO SUDO"
+    res = ""
+    for i in range(len(CORRECT_TEXT)):
+        temp = dummy.encrypt(text[i])
+        temp = temp[9]
+        # assume plugboard if mismatch
+        if temp != CORRECT_TEXT[i]:
+            if dummy.plugboard.wiring[text[i]] != CORRECT_TEXT[i]:
+                return False
+            dummy.plugboard.add_wiring(text[i], CORRECT_TEXT[i])
+            temp = CORRECT_TEXT[i]
+        res += temp
+    return res == CORRECT_TEXT
+
+def __num_to_rotor__(num):
+    """
+    Helper function to convert number to rotor
+    """
+    if num == 1:
+        return RotorI()
+    if num == 2:
+        return RotorII()
+    if num == 3:
+        return RotorIII()
+    return None
+
+def __num_to_rotor_name__(num):
+    """
+    Helper function to convert number to rotor name
+    """
+    if num == 1:
+        return "Rotor I"
+    if num == 2:
+        return "Rotor II"
+    if num == 3:
+        return "Rotor III"
+    return None
+
+def turing(text):
+    """
+    Turing the enigma machine to find the setting (brute force)
+    The text is the text that is encrypted and it should start with "HELLO SUDO" when decrypted
+    """
+    dummy_enigma = Enigma()
+
+    # the bruteforce loop
+    for left_rotor in range(1,4):
+        for middle_rotor in range(1,4):
+            for right_rotor in range(1,4):
+                for left_pos in range(ord("A"), ord("Z")+1):
+                    for middle_pos in range(ord("A"), ord("Z")+1):
+                        for right_pos in range(ord("A"), ord("Z")+1):
+                            print("Testing: " + __num_to_rotor_name__(left_rotor) + " " + __num_to_rotor_name__(middle_rotor) + " " + __num_to_rotor_name__(right_rotor) + " " + chr(left_pos) + " " + chr(middle_pos) + " " + chr(right_pos))
+                            dummy_enigma.set_left_rotor(__num_to_rotor__(left_rotor))
+                            dummy_enigma.set_middle_rotor(__num_to_rotor__(middle_rotor))
+                            dummy_enigma.set_right_rotor(__num_to_rotor__(right_rotor))
+                            dummy_enigma.set_left_position(chr(left_pos))
+                            dummy_enigma.set_middle_position(chr(middle_pos))
+                            dummy_enigma.set_right_position(chr(right_pos))
+                            if __test_turing__(text, dummy_enigma):
+                                r1 = "Left Rotor is " + __num_to_rotor_name__(left_rotor) + " at position " + chr(left_pos)
+                                r2 = "Middle Rotor is " + __num_to_rotor_name__(middle_rotor) + " at position " + chr(middle_pos)
+                                r3 = "Right Rotor is " + __num_to_rotor_name__(right_rotor) + " at position " + chr(right_pos)
+                                plugboard = "Plugboard is " + str(dummy_enigma.plugboard.wiring)
+                                res = r1 + "\n" + r2 + "\n" + r3 + "\n" + plugboard
+                                return res
+    return None
