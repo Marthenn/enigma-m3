@@ -9,10 +9,69 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+from rotor import RotorI, RotorII, RotorIII
+from enigma import Enigma, turing
 
+# mapping for color of the plugboard (key : (char1, char2))
+colors = {
+        "yellow": None,
+        "red": None,
+        "blue": None,
+        "green": None,
+        "orange": None,
+        "purple": None,
+        "pink": None,
+        "brown": None,
+        "cyan": None,
+        "magenta": None,
+        "lime": None,
+        "teal": None,
+        "lavender": None
+}
+
+def __rotor_to_num__(rotor):
+    """
+    Helper function to convert rotor object to number
+    """
+    if isinstance(rotor, RotorI):
+        return 0
+    if isinstance(rotor, RotorII):
+        return 1
+    if isinstance(rotor, RotorIII):
+        return 2
 
 class Ui_MainWindow(object):
+    def __enigma_to_setting__(self, enigma):
+        """
+        Helper function to set all the setting from the enigma machine
+        """
+        self.left_rotor.setCurrentIndex(__rotor_to_num__(enigma.rotor[0]))
+        self.middle_rotor.setCurrentIndex(__rotor_to_num__(enigma.rotor[1]))
+        self.right_rotor.setCurrentIndex(__rotor_to_num__(enigma.rotor[2]))
+        self.left_position.setCurrentIndex(ord(enigma.rotor[0].position) - ord("A"))
+        self.middle_position.setCurrentIndex(ord(enigma.rotor[1].position) - ord("A"))
+        self.right_position.setCurrentIndex(ord(enigma.rotor[2].position) - ord("A"))
+
+    def __set_step_text__(self, steps):
+        """
+        Helper function to set all the steps text
+        """
+        self.input_step.setText(steps[0])
+        self.input_plugboard_step.setText(steps[1])
+        self.right_rotor_step.setText(steps[2])
+        self.middle_rotor_step.setText(steps[3])
+        self.left_rotor_step.setText(steps[4])
+        self.reflector_step.setText(steps[5])
+        self.left_rotor_reverse_step.setText(steps[6])
+        self.middle_rotor_reverse_step.setText(steps[7])
+        self.right_rotor_reverse_step.setText(steps[8])
+        self.output_plugboard_step.setText(steps[9])
+        self.output_step.setText(steps[9])
+
     def setupUi(self, MainWindow):
+        self.enigma = Enigma() # the enigma machine
+        self.pressed_char = None # store the pressed char for the plugbord
+
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(800, 800)
         MainWindow.setMinimumSize(QtCore.QSize(800, 800))
@@ -731,6 +790,20 @@ class Ui_MainWindow(object):
         self.zButton.setText(_translate("MainWindow", "Z"))
         self.plugboard_header.setText(_translate("MainWindow", "Plugboard"))
 
+        # add settings to the drop down menu
+        self.left_rotor.addItems(["I", "II", "III"])
+        self.middle_rotor.addItems(["I", "II", "III"])
+        self.right_rotor.addItems(["I", "II", "III"])
+        self.left_position.addItems(["A", "B", "C", "D", "E", "F", "G", "H", "I", "J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X", "Y", "Z"])
+        self.middle_position.addItems(["A", "B", "C", "D", "E", "F", "G", "H", "I", "J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X", "Y", "Z"])
+        self.right_position.addItems(["A", "B", "C", "D", "E", "F", "G", "H", "I", "J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X", "Y", "Z"])
+
+        # clear the placeholder texts
+        self.__set_step_text__(("","","","","","","","","",""))
+        self.outputText.setText("")
+        
+        # setting set up
+        self.__enigma_to_setting__(self.enigma)
 
 if __name__ == "__main__":
     import sys
