@@ -14,40 +14,131 @@ from enigma import Enigma, turing
 
 # mapping for color of the plugboard (key : (char1, char2))
 colors = {
-        "yellow": None,
-        "red": None,
-        "blue": None,
-        "green": None,
-        "orange": None,
-        "purple": None,
-        "pink": None,
-        "brown": None,
-        "cyan": None,
-        "magenta": None,
-        "lime": None,
-        "teal": None,
-        "lavender": None
+    "yellow": None,
+    "red": None,
+    "blue": None,
+    "green": None,
+    "orange": None,
+    "purple": None,
+    "pink": None,
+    "brown": None,
+    "cyan": None,
+    "magenta": None,
+    "lime": None,
+    "teal": None,
+    "lavender": None
 }
 
-def __rotor_to_num__(rotor):
-    """
-    Helper function to convert rotor object to number
-    """
-    if isinstance(rotor, RotorI):
-        return 0
-    if isinstance(rotor, RotorII):
-        return 1
-    if isinstance(rotor, RotorIII):
-        return 2
-
 class Ui_MainWindow(object):
+    def __enigma_seting__(self):
+        """
+        Change the enigma machine setting according to the GUI
+        """
+        lr = self.left_rotor.currentIndex()
+        lr = self.__idx_to_rotor__(lr)
+        mr = self.middle_rotor.currentIndex()
+        mr = self.__idx_to_rotor__(mr)
+        rr = self.right_rotor.currentIndex()
+        rr = self.__idx_to_rotor__(rr)
+        lp = chr(self.left_position.currentIndex() + ord("A"))
+        mp = chr(self.middle_position.currentIndex() + ord("A"))
+        rp = chr(self.right_position.currentIndex() + ord("A"))
+        self.enigma.set_left_rotor(lr)
+        self.enigma.set_middle_rotor(mr)
+        self.enigma.set_right_rotor(rr)
+        self.enigma.set_left_position(lp)
+        self.enigma.set_middle_position(mp)
+        self.enigma.set_right_position(rp)
+
+    def __idx_to_rotor__(self, idx):
+        """
+        Helper function to convert index to rotor object
+        """
+        if idx == 0:
+            return RotorI()
+        if idx == 1:
+            return RotorII()
+        if idx == 2:
+            return RotorIII()
+        return None
+
+    def __rotor_to_idx__(self, rotor):
+        """
+        Helper function to convert rotor object to number
+        """
+        if isinstance(rotor, RotorI):
+            return 0
+        if isinstance(rotor, RotorII):
+            return 1
+        if isinstance(rotor, RotorIII):
+            return 2
+
+    def __char_button_plugboard__(self):
+        """
+        General function for all the plugboard buttons
+        """
+        char = self.sender().text()
+        if self.pressed_char == None:
+            self.pressed_char = char
+            self.sender().setStyleSheet("background-color: #5F9DF7")
+        else:
+            try:
+                self.__add_wiring__(self.pressed_char, char)
+            except Exception as e:
+                self.sender().setStyleSheet("background-color: white")
+                print(e)
+            self.pressed_char = None
+
+    def __char_to_button__ (self, char):
+        """
+        Function to convert character to button attribute (x -> self.xButton)
+        """
+        return getattr(self, char + "Button")
+
+    def __add_wiring__(self, char1, char2):
+        """
+        Add wiring to the plugboard and update the color
+        """
+        # find first color with no wiring
+        col = None
+        for color in colors:
+            if colors[color] == None:
+                col = color
+                break
+        if col == None:
+            raise Exception("No more color available")
+        colors[col] = (char1, char2)
+        self.enigma.plugboard.add_wiring(char1, char2)
+        # change the color of the plugboard
+        button1 = self.__char_to_button__(char1)
+        button2 = self.__char_to_button__(char2)
+        button1.setStyleSheet("background-color: " + col)
+        button2.setStyleSheet("background-color: " + col)
+    
+    def __remove_wiring__(self, char):
+        """
+        Remove wiring from the plugboard and update the color
+        """
+        removed = None
+        for color in colors:
+            if colors[color] != None:
+                if char in colors[color]:
+                    colors[color] = None
+                    removed = self.enigma.plugboard.remove_wiring(char)
+                    break
+        # change the color back to white
+        button1 = self.__char_to_button__(removed)
+        button2 = self.__char_to_button__(char)
+        button1.setStyleSheet("background-color: white")
+        button2.setStyleSheet("background-color: white")
+
     def __enigma_to_setting__(self, enigma):
         """
         Helper function to set all the setting from the enigma machine
         """
-        self.left_rotor.setCurrentIndex(__rotor_to_num__(enigma.rotor[0]))
-        self.middle_rotor.setCurrentIndex(__rotor_to_num__(enigma.rotor[1]))
-        self.right_rotor.setCurrentIndex(__rotor_to_num__(enigma.rotor[2]))
+        self.left_rotor.setCurrentIndex(self.__rotor_to_idx__(enigma.rotor[0]))
+        self.middle_rotor.setCurrentIndex(self.__rotor_to_idx__(enigma.rotor[1]))
+        self.right_rotor.setCurrentIndex(self.__rotor_to_idx__(enigma.rotor[2]))
         self.left_position.setCurrentIndex(ord(enigma.rotor[0].position) - ord("A"))
         self.middle_position.setCurrentIndex(ord(enigma.rotor[1].position) - ord("A"))
         self.right_position.setCurrentIndex(ord(enigma.rotor[2].position) - ord("A"))
@@ -717,6 +808,28 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
+         # add settings to the drop down menu
+        self.left_rotor.addItems(["I", "II", "III"])
+        self.middle_rotor.addItems(["I", "II", "III"])
+        self.right_rotor.addItems(["I", "II", "III"])
+        self.left_position.addItems(["A", "B", "C", "D", "E", "F", "G", "H", "I", "J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X", "Y", "Z"])
+        self.middle_position.addItems(["A", "B", "C", "D", "E", "F", "G", "H", "I", "J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X", "Y", "Z"])
+        self.right_position.addItems(["A", "B", "C", "D", "E", "F", "G", "H", "I", "J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X", "Y", "Z"])
+
+        # clear the placeholder texts
+        self.outputText.setText("")
+        
+        # setting set up
+        self.__enigma_to_setting__(self.enigma)
+
+        # add event listener to the setting
+        self.left_rotor.currentIndexChanged.connect(self.__enigma_seting__)
+        self.middle_rotor.currentIndexChanged.connect(self.__enigma_seting__)
+        self.right_rotor.currentIndexChanged.connect(self.__enigma_seting__)
+        self.left_position.currentIndexChanged.connect(self.__enigma_seting__)
+        self.middle_position.currentIndexChanged.connect(self.__enigma_seting__)
+        self.right_position.currentIndexChanged.connect(self.__enigma_seting__)
+
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
@@ -751,17 +864,17 @@ class Ui_MainWindow(object):
         self.label_17.setText(_translate("MainWindow", "Plugboard"))
         self.label_18.setText(_translate("MainWindow", "Output"))
         self.setting_header_4.setText(_translate("MainWindow", "Enigma Steps"))
-        self.output_plugboard_step.setText(_translate("MainWindow", "placeholder"))
-        self.output_step.setText(_translate("MainWindow", "placeholder"))
-        self.right_rotor_reverse_step.setText(_translate("MainWindow", "placeholder"))
-        self.left_rotor_reverse_step.setText(_translate("MainWindow", "placeholder"))
-        self.reflector_step.setText(_translate("MainWindow", "placeholder"))
-        self.input_step.setText(_translate("MainWindow", "placeholder"))
-        self.middle_rotor_step.setText(_translate("MainWindow", "placeholder"))
-        self.left_rotor_step.setText(_translate("MainWindow", "placeholder"))
-        self.middle_rotor_reverse_step.setText(_translate("MainWindow", "placeholder"))
-        self.input_plugboard_step.setText(_translate("MainWindow", "placeholder"))
-        self.right_rotor_step.setText(_translate("MainWindow", "placeholder"))
+        self.output_plugboard_step.setText(_translate("MainWindow", ""))
+        self.output_step.setText(_translate("MainWindow", ""))
+        self.right_rotor_reverse_step.setText(_translate("MainWindow", ""))
+        self.left_rotor_reverse_step.setText(_translate("MainWindow", ""))
+        self.reflector_step.setText(_translate("MainWindow", ""))
+        self.input_step.setText(_translate("MainWindow", ""))
+        self.middle_rotor_step.setText(_translate("MainWindow", ""))
+        self.left_rotor_step.setText(_translate("MainWindow", ""))
+        self.middle_rotor_reverse_step.setText(_translate("MainWindow", ""))
+        self.input_plugboard_step.setText(_translate("MainWindow", ""))
+        self.right_rotor_step.setText(_translate("MainWindow", ""))
         self.qButton.setText(_translate("MainWindow", "Q"))
         self.wButton.setText(_translate("MainWindow", "W"))
         self.eButton.setText(_translate("MainWindow", "E"))
@@ -789,21 +902,7 @@ class Ui_MainWindow(object):
         self.mButton.setText(_translate("MainWindow", "M"))
         self.zButton.setText(_translate("MainWindow", "Z"))
         self.plugboard_header.setText(_translate("MainWindow", "Plugboard"))
-
-        # add settings to the drop down menu
-        self.left_rotor.addItems(["I", "II", "III"])
-        self.middle_rotor.addItems(["I", "II", "III"])
-        self.right_rotor.addItems(["I", "II", "III"])
-        self.left_position.addItems(["A", "B", "C", "D", "E", "F", "G", "H", "I", "J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X", "Y", "Z"])
-        self.middle_position.addItems(["A", "B", "C", "D", "E", "F", "G", "H", "I", "J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X", "Y", "Z"])
-        self.right_position.addItems(["A", "B", "C", "D", "E", "F", "G", "H", "I", "J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X", "Y", "Z"])
-
-        # clear the placeholder texts
-        self.__set_step_text__(("","","","","","","","","",""))
-        self.outputText.setText("")
         
-        # setting set up
-        self.__enigma_to_setting__(self.enigma)
 
 if __name__ == "__main__":
     import sys
