@@ -35,6 +35,8 @@ class Enigma:
         if not char.isalpha():
             return char, char, char, char, char, char, char, char, char, char
 
+        uppercase = char.isupper()
+
         self.__rotate__()
         plugboard_input = self.plugboard.cypher(char)
         rl_3 = self.rotor[2].forward_cypher(plugboard_input)
@@ -45,6 +47,19 @@ class Enigma:
         lr_2 = self.rotor[1].reverse_cypher(lr_1)
         lr_3 = self.rotor[2].reverse_cypher(lr_2)
         plugboard_output = self.plugboard.cypher(lr_3)
+
+        # handle lowercase
+        if not uppercase:
+            plugboard_input = plugboard_input.lower()
+            rl_3 = rl_3.lower()
+            rl_2 = rl_2.lower()
+            rl_1 = rl_1.lower()
+            ref = ref.lower()
+            lr_1 = lr_1.lower()
+            lr_2 = lr_2.lower()
+            lr_3 = lr_3.lower()
+            plugboard_output = plugboard_output.lower()
+
         return char, plugboard_input, rl_3, rl_2, rl_1, ref, lr_1, lr_2, lr_3, plugboard_output
 
     def set_left_rotor(self, rotor):
