@@ -34,6 +34,30 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         """
         Functionality function of the turing button (reverse engineer the enigma machine's settings)
         """
+        # pop up for the input text
+        text, ok = QtWidgets.QInputDialog.getText(self, "Turing Test", "Input the text (starting with HELLO SUDO when decyphered):")
+        if ok:
+            print(len(text))
+            # check if the input text is valid
+            if len(text) < 10:
+                QtWidgets.QMessageBox.critical(self, "Error", "The text should be at least 10 characters long")
+                return
+            if not text.isupper():
+                text = text.upper()
+            # run the turing test
+            try:
+                QtWidgets.QMessageBox.information(self, "Wait", "The setting is currently being searched")
+                res = turing(text)
+                if res == None:
+                    QtWidgets.QMessageBox.critical(self, "Error", "No setting found")
+                    return
+                # print the setting
+                self.input_text.setText("")
+                self.outputText.setTextColor(QtGui.QColor(255, 255, 255))
+                self.outputText.setText(res)
+                QtWidgets.QMessageBox.information(self, "Success", "The setting is found")
+            except Exception as e:
+                QtWidgets.QMessageBox.critical(self, "Error", str(e))
 
     def __input_text__(self):
         """
@@ -46,6 +70,10 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         if len(text) < len(output_text):
             # cut output text
             self.outputText.setText(output_text[:len(text)])
+            return
+        
+        if len(text) == 0:
+            self.outputText.setText("")
             return
         
         # cypher the text
