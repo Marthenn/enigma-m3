@@ -29,7 +29,7 @@ colors = {
     "lavender": None
 }
 
-class Ui_MainWindow(object):
+class Ui_MainWindow(QtWidgets.QMainWindow):
     def __enigma_seting__(self):
         """
         Change the enigma machine setting according to the GUI
@@ -77,7 +77,15 @@ class Ui_MainWindow(object):
         """
         General function for all the plugboard buttons
         """
-        char = self.sender().text()
+        sender = self.sender()
+        char = sender.text().upper()
+        # check if the pressed button is already connected to another button
+        for color in colors:
+            if colors[color] != None:
+                if char in colors[color]:
+                    self.__remove_wiring__(char)
+                    return
+        # add wiring if it's not connected
         if self.pressed_char == None:
             self.pressed_char = char
             self.sender().setStyleSheet("background-color: #5F9DF7")
@@ -93,6 +101,7 @@ class Ui_MainWindow(object):
         """
         Function to convert character to button attribute (x -> self.xButton)
         """
+        char = char.lower()
         return getattr(self, char + "Button")
 
     def __add_wiring__(self, char1, char2):
@@ -829,6 +838,34 @@ class Ui_MainWindow(object):
         self.left_position.currentIndexChanged.connect(self.__enigma_seting__)
         self.middle_position.currentIndexChanged.connect(self.__enigma_seting__)
         self.right_position.currentIndexChanged.connect(self.__enigma_seting__)
+
+        # add event listener to the plugboard
+        self.aButton.clicked.connect(self.__char_button_plugboard__)
+        self.bButton.clicked.connect(self.__char_button_plugboard__)
+        self.cButton.clicked.connect(self.__char_button_plugboard__)
+        self.dButton.clicked.connect(self.__char_button_plugboard__)
+        self.eButton.clicked.connect(self.__char_button_plugboard__)
+        self.fButton.clicked.connect(self.__char_button_plugboard__)
+        self.gButton.clicked.connect(self.__char_button_plugboard__)
+        self.hButton.clicked.connect(self.__char_button_plugboard__)
+        self.iButton.clicked.connect(self.__char_button_plugboard__)
+        self.jButton.clicked.connect(self.__char_button_plugboard__)
+        self.kButton.clicked.connect(self.__char_button_plugboard__)
+        self.lButton.clicked.connect(self.__char_button_plugboard__)
+        self.mButton.clicked.connect(self.__char_button_plugboard__)
+        self.nButton.clicked.connect(self.__char_button_plugboard__)
+        self.oButton.clicked.connect(self.__char_button_plugboard__)
+        self.pButton.clicked.connect(self.__char_button_plugboard__)
+        self.qButton.clicked.connect(self.__char_button_plugboard__)
+        self.rButton.clicked.connect(self.__char_button_plugboard__)
+        self.sButton.clicked.connect(self.__char_button_plugboard__)
+        self.tButton.clicked.connect(self.__char_button_plugboard__)
+        self.uButton.clicked.connect(self.__char_button_plugboard__)
+        self.vButton.clicked.connect(self.__char_button_plugboard__)
+        self.wButton.clicked.connect(self.__char_button_plugboard__)
+        self.xButton.clicked.connect(self.__char_button_plugboard__)
+        self.yButton.clicked.connect(self.__char_button_plugboard__)
+        self.zButton.clicked.connect(self.__char_button_plugboard__)
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
