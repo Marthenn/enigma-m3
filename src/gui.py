@@ -116,18 +116,6 @@ class Ui_MainWindow(object):
         self.label_6.setFont(font)
         self.label_6.setStyleSheet("color: white")
         self.label_6.setObjectName("label_6")
-        self.label_7 = QtWidgets.QLabel(self.setting)
-        self.label_7.setGeometry(QtCore.QRect(20, 230, 61, 21))
-        font = QtGui.QFont()
-        font.setFamily("Segoe UI")
-        font.setPointSize(10)
-        self.label_7.setFont(font)
-        self.label_7.setStyleSheet("color: white")
-        self.label_7.setObjectName("label_7")
-        self.mode = QtWidgets.QComboBox(self.setting)
-        self.mode.setGeometry(QtCore.QRect(78, 230, 111, 22))
-        self.mode.setStyleSheet("background-color: white")
-        self.mode.setObjectName("mode")
         self.setting_header_3 = QtWidgets.QLabel(self.setting)
         self.setting_header_3.setGeometry(QtCore.QRect(50, 10, 131, 31))
         font = QtGui.QFont()
@@ -138,6 +126,19 @@ class Ui_MainWindow(object):
         self.setting_header_3.setFont(font)
         self.setting_header_3.setStyleSheet("color: white;")
         self.setting_header_3.setObjectName("setting_header_3")
+        self.turingButton = QtWidgets.QPushButton(self.setting)
+        self.turingButton.setGeometry(QtCore.QRect(20, 230, 171, 31))
+        font = QtGui.QFont()
+        font.setPointSize(9)
+        font.setBold(True)
+        font.setWeight(75)
+        self.turingButton.setFont(font)
+        self.turingButton.setStyleSheet("color: white;\n"
+"background-color: #1746A2;\n"
+"border: none;\n"
+"border-radius: 15px;\n"
+"padding: 8px;")
+        self.turingButton.setObjectName("turingButton")
         self.input = QtWidgets.QFrame(self.centralwidget)
         self.input.setGeometry(QtCore.QRect(20, 110, 521, 231))
         self.input.setStyleSheet("background-color: #5F9DF7;\n"
@@ -667,8 +668,8 @@ class Ui_MainWindow(object):
         self.label_4.setText(_translate("MainWindow", "Right Position"))
         self.label_5.setText(_translate("MainWindow", "Middle Position"))
         self.label_6.setText(_translate("MainWindow", "Left Position"))
-        self.label_7.setText(_translate("MainWindow", "Mode"))
         self.setting_header_3.setText(_translate("MainWindow", "Rotors Setting"))
+        self.turingButton.setText(_translate("MainWindow", "Alan Turing"))
         self.input_text.setHtml(_translate("MainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
