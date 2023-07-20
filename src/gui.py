@@ -50,44 +50,59 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         
         # cypher the text
         char = text[-1]
-        char, plugboard_input, rl_3, rl_2, rl_1, ref, lr_1, lr_2, lr_3, plugboard_output = self.enigma.encrypt(char)
-        output_text += plugboard_output
+        steps = self.enigma.encrypt(char)
+        self.__set_step_text__(steps)
+        output_text += steps[-1]
         self.outputText.setTextColor(QtGui.QColor(255, 255, 255))
         self.outputText.setText(output_text)
         self.__enigma_to_setting__(self.enigma)
 
-        # set the steps text
-        self.input_step.setText(char.upper())
-        self.input_plugboard_step.setText(plugboard_input)
-        self.right_rotor_step.setText(rl_3)
-        self.middle_rotor_step.setText(rl_2)
-        self.left_rotor_step.setText(rl_1)
-        self.reflector_step.setText(ref)
-        self.left_rotor_reverse_step.setText(lr_1)
-        self.middle_rotor_reverse_step.setText(lr_2)
-        self.right_rotor_reverse_step.setText(lr_3)
-        self.output_plugboard_step.setText(plugboard_output)
-        self.output_step.setText(plugboard_output)
+    def __enigma_to_setting__(self, enigma):
+        """
+        Helper function to set all the setting from the enigma machine
+        """
+        self.left_rotor.setCurrentIndex(self.__rotor_to_idx__(enigma.rotor[0]))
+        self.middle_rotor.setCurrentIndex(self.__rotor_to_idx__(enigma.rotor[1]))
+        self.right_rotor.setCurrentIndex(self.__rotor_to_idx__(enigma.rotor[2]))
+        self.left_position.setCurrentIndex(ord(enigma.rotor[0].position) - ord("A"))
+        self.middle_position.setCurrentIndex(ord(enigma.rotor[1].position) - ord("A"))
+        self.right_position.setCurrentIndex(ord(enigma.rotor[2].position) - ord("A"))
 
-    def __enigma_seting__(self):
+    def __left_rotor__(self):
         """
-        Change the enigma machine setting according to the GUI
+        Change the left rotor of the enigma machine based on the setting
         """
-        lr = self.left_rotor.currentIndex()
-        lr = self.__idx_to_rotor__(lr)
-        mr = self.middle_rotor.currentIndex()
-        mr = self.__idx_to_rotor__(mr)
-        rr = self.right_rotor.currentIndex()
-        rr = self.__idx_to_rotor__(rr)
-        lp = chr(self.left_position.currentIndex() + ord("A"))
-        mp = chr(self.middle_position.currentIndex() + ord("A"))
-        rp = chr(self.right_position.currentIndex() + ord("A"))
-        self.enigma.set_left_rotor(lr)
-        self.enigma.set_middle_rotor(mr)
-        self.enigma.set_right_rotor(rr)
-        self.enigma.set_left_position(lp)
-        self.enigma.set_middle_position(mp)
-        self.enigma.set_right_position(rp)
+        self.enigma.rotor[0] = self.__idx_to_rotor__(self.left_rotor.currentIndex())
+    
+    def __middle_rotor__(self):
+        """
+        Change the middle rotor of the enigma machine based on the setting
+        """
+        self.enigma.rotor[1] = self.__idx_to_rotor__(self.middle_rotor.currentIndex())
+    
+    def __right_rotor__(self):
+        """
+        Change the right rotor of the enigma machine based on the setting
+        """
+        self.enigma.rotor[2] = self.__idx_to_rotor__(self.right_rotor.currentIndex())
+    
+    def __left_position__(self):
+        """
+        Change the left position of the enigma machine based on the setting
+        """
+        self.enigma.rotor[0].position = chr(ord("A") + self.left_position.currentIndex())
+    
+    def __middle_position__(self):
+        """
+        Change the middle position of the enigma machine based on the setting
+        """
+        self.enigma.rotor[1].position = chr(ord("A") + self.middle_position.currentIndex())
+    
+    def __right_position__(self):
+        """
+        Change the right position of the enigma machine based on the setting
+        """
+        self.enigma.rotor[2].position = chr(ord("A") + self.right_position.currentIndex())
 
     def __idx_to_rotor__(self, idx):
         """
@@ -179,17 +194,6 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         button2 = self.__char_to_button__(char)
         button1.setStyleSheet("background-color: white")
         button2.setStyleSheet("background-color: white")
-
-    def __enigma_to_setting__(self, enigma):
-        """
-        Helper function to set all the setting from the enigma machine
-        """
-        self.left_rotor.setCurrentIndex(self.__rotor_to_idx__(enigma.rotor[0]))
-        self.middle_rotor.setCurrentIndex(self.__rotor_to_idx__(enigma.rotor[1]))
-        self.right_rotor.setCurrentIndex(self.__rotor_to_idx__(enigma.rotor[2]))
-        self.left_position.setCurrentIndex(ord(enigma.rotor[0].position) - ord("A"))
-        self.middle_position.setCurrentIndex(ord(enigma.rotor[1].position) - ord("A"))
-        self.right_position.setCurrentIndex(ord(enigma.rotor[2].position) - ord("A"))
 
     def __set_step_text__(self, steps):
         """
@@ -860,9 +864,9 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.left_rotor.addItems(["I", "II", "III"])
         self.middle_rotor.addItems(["I", "II", "III"])
         self.right_rotor.addItems(["I", "II", "III"])
-        self.left_position.addItems(["A", "B", "C", "D", "E", "F", "G", "H", "I", "J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X", "Y", "Z"])
-        self.middle_position.addItems(["A", "B", "C", "D", "E", "F", "G", "H", "I", "J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X", "Y", "Z"])
-        self.right_position.addItems(["A", "B", "C", "D", "E", "F", "G", "H", "I", "J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X", "Y", "Z"])
+        self.left_position.addItems(["A", "B", "C", "D", "E", "F", "G", "H", "I", "J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"])
+        self.middle_position.addItems(["A", "B", "C", "D", "E", "F", "G", "H", "I", "J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"])
+        self.right_position.addItems(["A", "B", "C", "D", "E", "F", "G", "H", "I", "J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"])
 
         # clear the placeholder texts
         self.outputText.setText("")
@@ -871,12 +875,12 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.__enigma_to_setting__(self.enigma)
 
         # add event listener to the setting
-        self.left_rotor.currentIndexChanged.connect(self.__enigma_seting__)
-        self.middle_rotor.currentIndexChanged.connect(self.__enigma_seting__)
-        self.right_rotor.currentIndexChanged.connect(self.__enigma_seting__)
-        self.left_position.currentIndexChanged.connect(self.__enigma_seting__)
-        self.middle_position.currentIndexChanged.connect(self.__enigma_seting__)
-        self.right_position.currentIndexChanged.connect(self.__enigma_seting__)
+        self.right_rotor.currentIndexChanged.connect(self.__right_rotor__)
+        self.middle_rotor.currentIndexChanged.connect(self.__middle_rotor__)
+        self.left_rotor.currentIndexChanged.connect(self.__left_rotor__)
+        self.right_position.currentIndexChanged.connect(self.__right_position__)
+        self.middle_position.currentIndexChanged.connect(self.__middle_position__)
+        self.left_position.currentIndexChanged.connect(self.__left_position__)
 
         # add event listener to the plugboard
         self.aButton.clicked.connect(self.__char_button_plugboard__)
