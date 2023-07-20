@@ -30,11 +30,44 @@ colors = {
 }
 
 class Ui_MainWindow(QtWidgets.QMainWindow):
+    def __turing__(self):
+        """
+        Functionality function of the turing button (reverse engineer the enigma machine's settings)
+        """
+
     def __input_text__(self):
         """
         Cypher the input text and update the output text
         """
+        text = self.input_text.toPlainText()
+        output_text = self.outputText.toPlainText()
 
+        # check if the input text is deleted
+        if len(text) < len(output_text):
+            # cut output text
+            self.outputText.setText(output_text[:len(text)])
+            return
+        
+        # cypher the text
+        char = text[-1]
+        char, plugboard_input, rl_3, rl_2, rl_1, ref, lr_1, lr_2, lr_3, plugboard_output = self.enigma.encrypt(char)
+        output_text += plugboard_output
+        self.outputText.setTextColor(QtGui.QColor(255, 255, 255))
+        self.outputText.setText(output_text)
+        self.__enigma_to_setting__(self.enigma)
+
+        # set the steps text
+        self.input_step.setText(char.upper())
+        self.input_plugboard_step.setText(plugboard_input)
+        self.right_rotor_step.setText(rl_3)
+        self.middle_rotor_step.setText(rl_2)
+        self.left_rotor_step.setText(rl_1)
+        self.reflector_step.setText(ref)
+        self.left_rotor_reverse_step.setText(lr_1)
+        self.middle_rotor_reverse_step.setText(lr_2)
+        self.right_rotor_reverse_step.setText(lr_3)
+        self.output_plugboard_step.setText(plugboard_output)
+        self.output_step.setText(plugboard_output)
 
     def __enigma_seting__(self):
         """
@@ -875,6 +908,9 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
 
         # add event listener to the input
         self.input_text.textChanged.connect(self.__input_text__)
+
+        # add event listener to the turing button
+        self.turingButton.clicked.connect(self.__turing__)
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
