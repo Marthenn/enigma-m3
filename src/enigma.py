@@ -19,13 +19,13 @@ class Enigma:
         """
         Rotate the rotors of the enigma machine
         """
-        self.rotor[2].rotate()
+        if self.rotor[1].position == self.rotor[1].notch:
+            self.rotor[0].rotate()
 
         if self.rotor[2].position == self.rotor[2].notch:
             self.rotor[1].rotate()
-
-        if self.rotor[1].position == self.rotor[1].notch:
-            self.rotor[0].rotate()
+        
+        self.rotor[2].rotate()
 
     def encrypt(self, char):
         """
