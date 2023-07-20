@@ -26,10 +26,16 @@ colors = {
     "magenta": None,
     "lime": None,
     "teal": None,
-    "lavender": None
+    "gray": None
 }
 
 class Ui_MainWindow(QtWidgets.QMainWindow):
+    def __input_text__(self):
+        """
+        Cypher the input text and update the output text
+        """
+
+
     def __enigma_seting__(self):
         """
         Change the enigma machine setting according to the GUI
@@ -866,6 +872,9 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.xButton.clicked.connect(self.__char_button_plugboard__)
         self.yButton.clicked.connect(self.__char_button_plugboard__)
         self.zButton.clicked.connect(self.__char_button_plugboard__)
+
+        # add event listener to the input
+        self.input_text.textChanged.connect(self.__input_text__)
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
